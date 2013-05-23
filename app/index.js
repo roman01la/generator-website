@@ -7,6 +7,8 @@ var yeoman = require('yeoman-generator');
 var WebsiteGenerator = module.exports = function WebsiteGenerator(args, options, config) {
   yeoman.generators.Base.apply(this, arguments);
 
+  this.indexFile = this.readFileAsString(path.join(this.sourceRoot(), 'index.html'));
+
   this.on('end', function () {
     this.installDependencies({ skipInstall: options['skip-install'] });
   });
@@ -16,50 +18,45 @@ var WebsiteGenerator = module.exports = function WebsiteGenerator(args, options,
 
 util.inherits(WebsiteGenerator, yeoman.generators.NamedBase);
 
-WebsiteGenerator.prototype.askFor = function askFor() {
-  var cb = this.async();
+WebsiteGenerator.prototype.gruntfile = function gruntfile() {
+  this.template('Gruntfile.js');
+};
 
-  // welcome message
-  var welcome =
-  '\n     _-----_' +
-  '\n    |       |' +
-  '\n    |' + '--(o)--'.red + '|   .--------------------------.' +
-  '\n   `---------´  |    ' + 'Welcome to Yeoman,'.yellow.bold + '    |' +
-  '\n    ' + '( '.yellow + '_' + '´U`'.yellow + '_' + ' )'.yellow + '   |   ' + 'ladies and gentlemen!'.yellow.bold + '  |' +
-  '\n    /___A___\\   \'__________________________\'' +
-  '\n     |  ~  |'.yellow +
-  '\n   __' + '\'.___.\''.yellow + '__' +
-  '\n ´   ' + '`  |'.red + '° ' + '´ Y'.red + ' `\n';
+WebsiteGenerator.prototype.h5bp = function h5bp() {
+  this.copy('favicon.ico', 'favicon.ico');
+  this.copy('404.html', '404.html');
+  this.copy('robots.txt', 'robots.txt');
+  this.copy('htaccess', '.htaccess');
+};
 
-  console.log(welcome);
+WebsiteGenerator.prototype.projectFiles = function projectFiles() {
+  this.copy('_package.json', 'package.json');
+  this.copy('bowerrc', '.bowerrc');
+  this.copy('_bower.json', 'bower.json');
+  this.copy('jshintrc', '.jshintrc');
+  this.copy('editorconfig', '.editorconfig');
+};
 
-  var prompts = [{
-    name: 'someOption',
-    message: 'Would you like to enable this option?',
-    default: 'Y/n',
-    warning: 'Yes: Enabling this will be totally awesome!'
-  }];
+WebsiteGenerator.prototype.writeIndex = function writeIndex() {
+  var contentText = [
+    '                             ',
+    '        <h1>Hello World!</h1>',
+    '                             '
+  ];
 
-  this.prompt(prompts, function (err, props) {
-    if (err) {
-      return this.emit('error', err);
-    }
+  this.indexFile = this.appendScripts(this.indexFile, 'js/main.js', [
+    'components/jquery/jquery.min.js',
+    'js/script.js'
+  ]);
 
-    this.someOption = (/y/i).test(props.someOption);
-
-    cb();
-  }.bind(this));
+  this.indexFile = this.indexFile.replace('<body>', '<body>\n' + contentText.join('\n'));
 };
 
 WebsiteGenerator.prototype.app = function app() {
-  this.mkdir('app');
-  this.mkdir('app/templates');
-
-  this.copy('_package.json', 'package.json');
-  this.copy('_component.json', 'component.json');
-};
-
-WebsiteGenerator.prototype.projectfiles = function projectfiles() {
-  this.copy('editorconfig', '.editorconfig');
-  this.copy('jshintrc', '.jshintrc');
+  this.mkdir('styles');
+  this.mkdir('js');
+  this.mkdir('img');
+  this.write('index.html', this.indexFile);
+  this.write('js/script.js', '(function () {\n\n})();');
+  this.write('styles/main.scss', '@import "normalize-scss/normalize";');
 };
