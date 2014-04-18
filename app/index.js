@@ -1,15 +1,15 @@
 'use strict';
-var util = require('util');
-var path = require('path');
-var yeoman = require('yeoman-generator');
+var util = require('util'),
+    path = require('path'),
+    yeoman = require('yeoman-generator');
 
 
-var WebsiteGenerator = module.exports = function WebsiteGenerator(args, options, config) {
+var WebsiteGenerator = module.exports = function WebsiteGenerator (args, options, config) {
   yeoman.generators.Base.apply(this, arguments);
 
   this.indexFile = this.readFileAsString(path.join(this.sourceRoot(), 'index.html'));
 
-  this.on('end', function () {
+  this.on('end', function() {
     this.installDependencies({ skipInstall: options['skip-install'] });
   });
 
@@ -18,18 +18,18 @@ var WebsiteGenerator = module.exports = function WebsiteGenerator(args, options,
 
 util.inherits(WebsiteGenerator, yeoman.generators.NamedBase);
 
-WebsiteGenerator.prototype.gruntfile = function gruntfile() {
+WebsiteGenerator.prototype.gruntfile = function() {
   this.template('Gruntfile.js');
 };
 
-WebsiteGenerator.prototype.h5bp = function h5bp() {
+WebsiteGenerator.prototype.h5bp = function() {
   this.copy('favicon.ico', 'favicon.ico');
   this.copy('404.html', '404.html');
   this.copy('robots.txt', 'robots.txt');
   this.copy('htaccess', '.htaccess');
 };
 
-WebsiteGenerator.prototype.projectFiles = function projectFiles() {
+WebsiteGenerator.prototype.projectFiles = function() {
   this.copy('_package.json', 'package.json');
   this.copy('bowerrc', '.bowerrc');
   this.copy('_bower.json', 'bower.json');
@@ -37,26 +37,33 @@ WebsiteGenerator.prototype.projectFiles = function projectFiles() {
   this.copy('editorconfig', '.editorconfig');
 };
 
-WebsiteGenerator.prototype.writeIndex = function writeIndex() {
+WebsiteGenerator.prototype.writeIndex = function() {
   var contentText = [
     '                             ',
     '        <h1>Hello World!</h1>',
-    '                             '
+    '        <img src="/img/logo.png">'
   ];
 
   this.indexFile = this.appendScripts(this.indexFile, 'js/main.js', [
-    'components/jquery/jquery.min.js',
+    'bower_components/jquery/dist/jquery.js',
     'js/script.js'
   ]);
 
   this.indexFile = this.indexFile.replace('<body>', '<body>\n' + contentText.join('\n'));
 };
 
-WebsiteGenerator.prototype.app = function app() {
+WebsiteGenerator.prototype.app = function() {
   this.mkdir('styles');
   this.mkdir('js');
   this.mkdir('img');
+  this.copy('logo.png', 'img/logo.png');
   this.write('index.html', this.indexFile);
   this.write('js/script.js', '(function () {\n\n})();');
-  this.write('styles/main.scss', '@import "normalize-scss/normalize";');
+  this.write('styles/main.scss', [
+    '@import "modularized-normalize-scss/normalize";',
+    '\n\n',
+    'body {',
+    '  text-align: center;',
+    '}'
+  ].join('\n'));
 };
