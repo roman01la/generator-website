@@ -1,5 +1,8 @@
 # Generator website
+
+[![NPM version](https://badge.fury.io/js/generator-website.svg)](http://badge.fury.io/js/generator-website)
 [![Build Status](https://secure.travis-ci.org/roman01la/generator-website.png?branch=master)](https://travis-ci.org/roman01la/generator-website)
+[![Dependency Status](https://gemnasium.com/roman01la/generator-website.svg)](https://gemnasium.com/roman01la/generator-website)
 
 ![Generator website logo](https://raw.github.com/roman01la/generator-website/master/logo.png)
 
