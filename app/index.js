@@ -1,69 +1,83 @@
 'use strict';
+
 var util = require('util'),
     path = require('path'),
-    yeoman = require('yeoman-generator');
+    yeoman = require('yeoman-generator'),
+    writing = require('html-wiring'),
+    mkdirp = require('mkdirp');
 
 
-var WebsiteGenerator = module.exports = function WebsiteGenerator (args, options, config) {
-  yeoman.generators.Base.apply(this, arguments);
+var WebsiteGenerator = module.exports = function WebsiteGenerator (args, options) {
 
-  this.indexFile = this.readFileAsString(path.join(this.sourceRoot(), 'index.html'));
+    yeoman.generators.Base.apply(this, arguments);
 
-  this.on('end', function() {
-    this.installDependencies({ skipInstall: options['skip-install'] });
-  });
+    this.__ = require('lodash');
 
-  this.pkg = JSON.parse(this.readFileAsString(path.join(__dirname, '../package.json')));
+    this.indexFile = writing.readFileAsString(path.join(this.sourceRoot(), 'index.html'));
+
+    this.on('end', function() {
+
+        this.installDependencies({ skipInstall: options['skip-install'] });
+    });
+
+    this.pkg = JSON.parse(writing.readFileAsString(path.join(__dirname, '../package.json')));
 };
 
 util.inherits(WebsiteGenerator, yeoman.generators.NamedBase);
 
 WebsiteGenerator.prototype.gruntfile = function() {
-  this.template('Gruntfile.js');
+
+    this.template('Gruntfile.js');
 };
 
 WebsiteGenerator.prototype.h5bp = function() {
-  this.copy('favicon.ico', 'favicon.ico');
-  this.copy('404.html', '404.html');
-  this.copy('robots.txt', 'robots.txt');
-  this.copy('htaccess', '.htaccess');
+
+    this.copy('favicon.ico', 'favicon.ico');
+    this.copy('404.html', '404.html');
+    this.copy('robots.txt', 'robots.txt');
+    this.copy('htaccess', '.htaccess');
 };
 
 WebsiteGenerator.prototype.projectFiles = function() {
-  this.copy('_package.json', 'package.json');
-  this.copy('bowerrc', '.bowerrc');
-  this.copy('_bower.json', 'bower.json');
-  this.copy('jshintrc', '.jshintrc');
-  this.copy('editorconfig', '.editorconfig');
+
+    this.copy('_package.json', 'package.json');
+    this.copy('bowerrc', '.bowerrc');
+    this.copy('_bower.json', 'bower.json');
+    this.copy('jshintrc', '.jshintrc');
+    this.copy('editorconfig', '.editorconfig');
 };
 
 WebsiteGenerator.prototype.writeIndex = function() {
-  var contentText = [
-    '                             ',
-    '        <h1>Hello World!</h1>',
-    '        <img src="/img/logo.png">'
-  ];
 
-  this.indexFile = this.appendScripts(this.indexFile, 'js/main.js', [
-    'bower_components/jquery/dist/jquery.js',
-    'js/script.js'
-  ]);
+    var contentText = [
+        '                             ',
+        '        <h1>Hello World!</h1>',
+        '        <img src="/img/logo.png">'
+    ];
 
-  this.indexFile = this.indexFile.replace('<body>', '<body>\n' + contentText.join('\n'));
+    this.indexFile = writing.appendScripts(this.indexFile, 'js/main.js', [
+
+        'bower_components/jquery/dist/jquery.js',
+        'js/script.js'
+    ]);
+
+    this.indexFile = this.indexFile.replace('<body>', '<body>\n' + contentText.join('\n'));
 };
 
 WebsiteGenerator.prototype.app = function() {
-  this.mkdir('styles');
-  this.mkdir('js');
-  this.mkdir('img');
-  this.copy('logo.png', 'img/logo.png');
-  this.write('index.html', this.indexFile);
-  this.write('js/script.js', '(function () {\n\n})();');
-  this.write('styles/main.scss', [
-    '@import "modularized-normalize-scss/normalize";',
-    '\n\n',
-    'body {',
-    '  text-align: center;',
-    '}'
-  ].join('\n'));
+
+    mkdirp('styles');
+    mkdirp('js');
+    mkdirp('img');
+    this.copy('logo.png', 'img/logo.png');
+    this.write('index.html', this.indexFile);
+    this.write('js/script.js', '(function () {\n\n})();');
+    this.write('styles/main.scss', [
+
+        '@import "modularized-normalize-scss/normalize";',
+        '\n\n',
+        'body {',
+        '  text-align: center;',
+        '}'
+    ].join('\n'));
 };

@@ -1,5 +1,5 @@
 {
-  "name": "<%= _.slugify(appname) %>",
+  "name": "<%= __.slugify(appname) %>",
   "version": "0.0.0",
   "dependencies": {
     "modularized-normalize-scss": "~3.0.1",
@@ -7,4 +7,3 @@
     "jquery": "~2.1.0"
   }
 }
-
