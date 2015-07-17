@@ -2,8 +2,8 @@
   "name": "<%= __.slugify(appname) %>",
   "version": "0.0.0",
   "dependencies": {
-    "modularized-normalize-scss": "~3.0.1",
-    "modernizr": "~2.7.2",
-    "jquery": "~2.1.0"
+    "modularized-normalize-scss": "~3.0.3",
+    "modernizr": "~2.8.3",
+    "jquery": "~2.1.4"
   }
 }
